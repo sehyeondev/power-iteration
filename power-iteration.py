@@ -1,27 +1,49 @@
 import numpy as np
 
+def power_iteration(M, x, small_constant):
+    prev_x = np.zeros(len(x))
+    while np.linalg.norm(x-prev_x) >= small_constant:
+        prev_x = x
+        x = np.matmul(M, x) # compute new x
+        x = x/np.linalg.norm(x)
+    return x
+
+# Exercise 11.1.7 in the MMDS textbook
+small_constant = 0.000001
 M = np.array([[1,1,1], [1,2,3], [1,3,6]])
-# print(M.__repr__())
-# # print(M.shape)
-x = np.ones((3))
-# # x = np.array([1,2,3])
-# print (x.__repr__())
+x = np.ones((3,1)) # vector of three 1's
+# (a) find principal eigenvector using power iteration
+first_x = power_iteration(M, x, small_constant)
+# (b) compute principal eigenvalue
+first_lambda = np.dot(np.dot(np.transpose(first_x), M), first_x)
+# (c) Construct a new matrix
+new_M = M - first_lambda * np.dot(first_x, np.transpose(first_x))
+# (d) find second eigenpair for M
+second_x = power_iteration(new_M, x, small_constant)
+second_lambda = np.dot(np.dot(np.transpose(second_x), M), second_x)
+# (e) find the third eigenpair by repeating (c) and (d)
+third_M = new_M - second_lambda * np.dot(second_x, np.transpose(second_x))
+third_x = power_iteration(third_M, x, small_constant)
+third_lambda = np.dot(np.dot(np.transpose(third_x), M), third_x)
 
-# M = np.array([[3,2], [2, 6]])
-# x = np.ones(2)
+print ("first eigenvector")
+print (first_x.__repr__())
+print ("first eigenvalue")
+print (first_lambda)
+print ("new matrix")
+print (new_M.__repr__())
+print ("second eigenvector")
+print (second_x.__repr__())
+print ("second eigenvalue")
+print (second_lambda)
+print ("third matrix")
+print (third_M.__repr__())
+print ("third eigenvector")
+print (third_x.__repr__())
+print ("third eigenvalue")
+print (third_lambda)
 
-# print (x.shape)
-for i in range(10):
-    x = np.matmul(M, x) # compute new x
-    print (x.__repr__())
-    print (abs(x).__repr__())
-    print(max(abs(x)))
-    
-    # x = x/max(abs(x))
-    x = x/np.linalg.norm(x)
-    # print(x.shape)
-    print (x.__repr__())
-    print()
-
-new_lambda = np.matmul(np.matmul(np.transpose(x), M), x)
-print (new_lambda)
+# # test if my answer is right
+# w, v = np.linalg.eig(M)
+# print(w)
+# print(v)
